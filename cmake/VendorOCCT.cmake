@@ -1,0 +1,94 @@
+# cmake/VendorOCCT.cmake
+# Configures OpenCASCADE Technology (OCCT) as a vendored subdirectory.
+#
+# Strategy
+# --------
+# Pull in only the geometry kernel and data exchange modules.
+# All visualisation, scripting, and inspector modules are disabled —
+# this keeps the Windows build fast and removes FreeType/Tcl/Tk deps.
+#
+# Modules kept ON:
+#   FoundationClasses  — basic types, collections, math
+#   ModelingData       — BRep, geometry primitives
+#   ModelingAlgorithms — Boolean ops, fillets, sweeps
+#   DataExchange       — STEP, IGES read/write
+#
+# Everything else is OFF.
+
+set(OCCT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/occt")
+
+if(NOT EXISTS "${OCCT_SOURCE_DIR}/CMakeLists.txt")
+    message(FATAL_ERROR
+        "OpenCASCADE source not found at ${OCCT_SOURCE_DIR}.\n"
+        "Did you run bootstrap.sh (Linux) or bootstrap.ps1 (Windows)?\n"
+        "  git submodule update --init --recursive"
+    )
+endif()
+
+# ── Disable all modules first ─────────────────────────────────────────────────
+foreach(_mod IN ITEMS
+    Draw Visualization ApplicationFramework DataExchange
+    Inspector Samples Tests
+)
+    set(BUILD_MODULE_${_mod} OFF CACHE BOOL "" FORCE)
+endforeach()
+
+# ── Enable only what we need ──────────────────────────────────────────────────
+set(BUILD_MODULE_FoundationClasses  ON  CACHE BOOL "" FORCE)
+set(BUILD_MODULE_ModelingData       ON  CACHE BOOL "" FORCE)
+set(BUILD_MODULE_ModelingAlgorithms ON  CACHE BOOL "" FORCE)
+set(BUILD_MODULE_DataExchange       ON  CACHE BOOL "" FORCE)
+
+# ── Strip optional third-party deps ──────────────────────────────────────────
+set(USE_FREETYPE  OFF CACHE BOOL "" FORCE)
+set(USE_TK        OFF CACHE BOOL "" FORCE)
+set(USE_TCL       OFF CACHE BOOL "" FORCE)
+set(USE_OPENGL    OFF CACHE BOOL "" FORCE)
+set(USE_D3D       OFF CACHE BOOL "" FORCE)
+set(USE_FREEIMAGE OFF CACHE BOOL "" FORCE)
+set(USE_FFMPEG    OFF CACHE BOOL "" FORCE)
+set(USE_OPENVR    OFF CACHE BOOL "" FORCE)
+set(USE_RAPIDJSON OFF CACHE BOOL "" FORCE)
+set(USE_DRACO     OFF CACHE BOOL "" FORCE)
+
+# ── Suppress OCCT's install targets polluting ours ───────────────────────────
+set(INSTALL_DIR     ""  CACHE PATH   "" FORCE)
+set(INSTALL_DIR_BIN ""  CACHE PATH   "" FORCE)
+set(INSTALL_DIR_LIB ""  CACHE PATH   "" FORCE)
+set(INSTALL_DIR_INC ""  CACHE PATH   "" FORCE)
+set(BUILD_DOC_Overview OFF CACHE BOOL "" FORCE)
+
+# ── Silence OCCT's own warnings so /WX doesn't trip on their headers ─────────
+if(MSVC)
+    add_compile_options(/experimental:external /external:anglebrackets /external:W0)
+endif()
+
+# ── Pull in the source tree ───────────────────────────────────────────────────
+add_subdirectory("${OCCT_SOURCE_DIR}" occt EXCLUDE_FROM_ALL)
+
+# ── Convenience alias target ──────────────────────────────────────────────────
+# Consumer targets link against pcad::occt and get the right include paths
+# and link libraries automatically.
+add_library(pcad_occt_kernel INTERFACE)
+add_library(pcad::occt ALIAS pcad_occt_kernel)
+
+target_link_libraries(pcad_occt_kernel INTERFACE
+    TKernel
+    TKMath
+    TKBRep
+    TKGeomBase
+    TKGeomAlgo
+    TKTopAlgo
+    TKPrim
+    TKBool
+    TKBO
+    TKFillet
+    TKOffset
+    TKSTEP
+    TKSTEP209
+    TKSTEPBase
+    TKSTEPAttr
+    TKIGES
+    TKXSBase
+    TKSTL
+)
