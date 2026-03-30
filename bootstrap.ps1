@@ -33,6 +33,16 @@ git submodule update --init --recursive --progress
 Write-Host "    Done."
 Write-Host ""
 
+# ── Pin each submodule to its exact reproducible tag ─────────────────────────
+Write-Host "==> Pinning submodules to release tags ..."
+
+git -C vendor/occt   checkout V7_8_0
+git -C vendor/catch2 checkout v3.6.0
+git -C vendor/eigen  checkout 3.4.0
+
+Write-Host "    Done."
+Write-Host ""
+
 # ── Summary ──────────────────────────────────────────────────────────────────
 Write-Host "==> Submodule status:"
 git submodule status
