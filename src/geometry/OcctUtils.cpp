@@ -9,7 +9,6 @@
 // OCCT — BRep primitives
 #include <BRepPrimAPI_MakeSphere.hxx>
 #include <BRepPrimAPI_MakeBox.hxx>
-#include <TopoDS_Shape.hxx>
 
 // OCCT — bounding box
 #include <BRepBndLib.hxx>

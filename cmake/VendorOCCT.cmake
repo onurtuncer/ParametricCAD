@@ -63,6 +63,14 @@ if(MSVC)
     add_compile_options(/experimental:external /external:anglebrackets /external:W0)
 endif()
 
+# ── Expose OCCT's generated headers before compiling its own targets ─────────
+# OCCT copies all public headers to ${CMAKE_BINARY_DIR}/inc/ at configure time.
+# Standard_Version.hxx (configure_file) lands in ${CMAKE_BINARY_DIR}/occt/inc/.
+# Both paths are needed: the first for all source headers, the second for that
+# one generated header. The global include_directories ensures OCCT's own
+# toolkits find them; the INTERFACE on pcad_occt_kernel propagates to consumers.
+include_directories(BEFORE "${CMAKE_BINARY_DIR}/inc" "${CMAKE_BINARY_DIR}/occt/inc")
+
 # ── Pull in the source tree ───────────────────────────────────────────────────
 add_subdirectory("${OCCT_SOURCE_DIR}" occt EXCLUDE_FROM_ALL)
 
@@ -72,23 +80,33 @@ add_subdirectory("${OCCT_SOURCE_DIR}" occt EXCLUDE_FROM_ALL)
 add_library(pcad_occt_kernel INTERFACE)
 add_library(pcad::occt ALIAS pcad_occt_kernel)
 
+target_include_directories(pcad_occt_kernel INTERFACE
+    "${CMAKE_BINARY_DIR}/inc"
+    "${CMAKE_BINARY_DIR}/occt/inc"
+)
+
 target_link_libraries(pcad_occt_kernel INTERFACE
+    # Foundation
     TKernel
     TKMath
+    # Modeling
     TKBRep
+    TKG2d
+    TKG3d
     TKGeomBase
     TKGeomAlgo
     TKTopAlgo
     TKPrim
+    TKShHealing
     TKBool
     TKBO
     TKFillet
     TKOffset
-    TKSTEP
-    TKSTEP209
-    TKSTEPBase
-    TKSTEPAttr
-    TKIGES
+    # Data exchange (OCCT 7.8 names)
     TKXSBase
-    TKSTL
+    TKDE
+    TKDECascade
+    TKDESTEP
+    TKDEIGES
+    TKDESTL
 )

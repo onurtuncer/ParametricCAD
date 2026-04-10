@@ -11,9 +11,8 @@
 #include <string>
 #include <tuple>
 
-// Forward-declare OCCT types so callers do not pull in the full OCCT headers.
-class TopoDS_Shape;
-class Bnd_Box;
+// TopoDS_Shape must be a complete type because it is stored inside std::optional.
+#include <TopoDS_Shape.hxx>
 
 namespace PCAD::Geometry {
 
