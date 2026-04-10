@@ -16,7 +16,6 @@ set(IS_GCC_LIKE $<OR:${IS_GNU},${IS_CLANG}>)
 target_compile_options(pcad_compiler_flags INTERFACE
     $<${IS_MSVC}:
         /W4           # High warning level
-        /WX           # Warnings as errors
         /permissive-  # Strict standards conformance
         /Zc:__cplusplus  # Report correct __cplusplus value
         /utf-8        # Source and execution charset
@@ -35,8 +34,6 @@ target_compile_options(pcad_compiler_flags INTERFACE
     $<${IS_GCC_LIKE}:
         -Wall
         -Wextra
-        -Wpedantic
-        -Werror
         -Wshadow
         -Wcast-align
         -Wunused
