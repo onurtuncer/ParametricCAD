@@ -1,6 +1,6 @@
 # ParametricCAD
 
-> A GitHub template for parametric CAD applications built on
+> A GitHub template for CAD applications built on
 > [OpenCASCADE Technology (OCCT)](https://dev.opencascade.org/) in modern C++20.
 
 [![CI](https://github.com/YOUR_ORG/ParametricCAD/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_ORG/ParametricCAD/actions/workflows/ci.yml)
@@ -17,7 +17,6 @@
 | Build system | CMake 3.25+ with `CMakePresets.json` |
 | Compiler support | GCC, Clang, MSVC (x64) |
 | Test harness | Catch2 v3 — vendored as a git submodule |
-| Linear algebra | Eigen 3.4 — vendored, header-only |
 | Documentation | Doxygen XML → Sphinx + Breathe + Furo HTML |
 | CI | GitHub Actions — Linux and Windows matrix |
 | Code style | `.clang-format` + `.clang-tidy` |
@@ -27,16 +26,49 @@ A clean clone + one bootstrap command is all that is needed to build.
 
 ---
 
+## Repository layout
+
+```
+ParametricCAD/
+├── cmake/
+│   ├── CompilerFlags.cmake   # Strict cross-platform warning flags
+│   ├── VendorOCCT.cmake      # OCCT subdirectory + pcad::occt alias target
+│   └── Docs.cmake            # Doxygen → Sphinx pipeline
+├── vendor/
+│   ├── occt/                 # git submodule — OpenCASCADE V7_8_0
+│   ├── catch2/               # git submodule — Catch2 v3.6.0
+│   └── eigen/                # git submodule — Eigen 3.4.0
+├── src/
+│   ├── geometry/             # OCCT wrapper (primitives, bounding box)
+│   ├── io/                   # STEP / IGES / STL export
+│   └── main.cpp              # CLI entry point
+├── tests/
+│   ├── geometry/             # Catch2 tests — primitive creation & bbox
+│   └── io/                   # Catch2 tests — STEP and STL export
+├── docs/
+│   ├── requirements.txt      # Pinned Python doc dependencies
+│   ├── venv-setup.sh         # Create .venv on Linux
+│   └── venv-setup.ps1        # Create .venv on Windows
+├── bootstrap.sh              # Submodule init (Linux / macOS)
+├── bootstrap.ps1             # Submodule init (Windows PowerShell)
+├── CMakeLists.txt
+├── CMakePresets.json
+└── .gitmodules
+```
+
+---
+
 ## Prerequisites
 
 ### Linux
 
-| Tool | Minimum version |
+| Tool | Minimum |
 |---|---|
 | CMake | 3.25 |
-| Ninja | any recent |
+| Ninja | any |
 | GCC or Clang | GCC 12 / Clang 15 |
-| Python | 3.10 (docs only) |
+| Python 3 | 3.10 (docs only) |
+| Doxygen | any (docs only) |
 
 ```bash
 # Ubuntu 22.04 / 24.04
@@ -48,13 +80,11 @@ sudo apt install cmake ninja-build gcc g++ python3 python3-venv doxygen
 | Tool | Notes |
 |---|---|
 | Visual Studio 2022 | Desktop C++ workload required |
-| CMake 3.25+ | Bundled with VS or from cmake.org |
-| Ninja | Optional — needed for `windows-ninja-debug` preset |
+| CMake 3.25+ | Bundled with VS, or from cmake.org |
 | Python 3.10+ | Docs only — from python.org |
 | Doxygen | Docs only — from doxygen.nl |
 
-> **PowerShell execution policy** — the bootstrap and venv scripts require
-> scripts to be runnable. Either set your policy permanently or run:
+> **PowerShell execution policy** — run once before the bootstrap script:
 > ```powershell
 > Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 > ```
@@ -63,17 +93,14 @@ sudo apt install cmake ninja-build gcc g++ python3 python3-venv doxygen
 
 ## Quick start
 
-### 1 — Use this template
-
-Click **Use this template → Create a new repository** on GitHub, then clone
-your new repo:
+### 1 — Clone
 
 ```bash
 git clone https://github.com/YOUR_ORG/YOUR_REPO
 cd YOUR_REPO
 ```
 
-### 2 — Initialise submodules
+### 2 — Bootstrap (pulls all submodules)
 
 ```bash
 # Linux
@@ -82,8 +109,6 @@ cd YOUR_REPO
 # Windows (PowerShell)
 .\bootstrap.ps1
 ```
-
-This runs `git submodule update --init --recursive` and prints next steps.
 
 ### 3 — Configure and build
 
@@ -101,65 +126,51 @@ cmake --build build/windows-msvc-debug
 
 ```bash
 # Linux
-ctest --preset linux-debug
+ctest --preset linux-debug --output-on-failure
 
 # Windows
-ctest --preset windows-msvc-debug
+ctest --preset windows-msvc-debug --output-on-failure
 ```
 
 ---
 
 ## Available presets
 
-| Preset | Platform | Compiler | Config | Tests | ASan |
-|---|---|---|---|---|---|
-| `linux-debug` | Linux | GCC / Clang | Debug | on | off |
-| `linux-release` | Linux | GCC / Clang | RelWithDebInfo | on | off |
-| `linux-asan` | Linux | GCC / Clang | Debug | on | **on** |
-| `windows-msvc-debug` | Windows | MSVC x64 | Debug | on | off |
-| `windows-msvc-release` | Windows | MSVC x64 | Release | on | off |
-| `windows-ninja-debug` | Windows | clang-cl | Debug | on | off |
-| `docs` | Linux | — | Release | off | off |
+| Preset | Platform | Compiler | Config | ASan |
+|---|---|---|---|---|
+| `linux-debug` | Linux | GCC / Clang | Debug | off |
+| `linux-release` | Linux | GCC / Clang | RelWithDebInfo | off |
+| `linux-asan` | Linux | GCC / Clang | Debug | on |
+| `windows-msvc-debug` | Windows | MSVC x64 | Debug | off |
+| `windows-msvc-release` | Windows | MSVC x64 | Release | off |
+| `windows-ninja-debug` | Windows | clang-cl | Debug | off |
+| `docs` | Linux | — | Release | off |
 
 ---
 
-## Project structure
+## Vendored dependencies
 
-```
-ParametricCAD/
-├── cmake/
-│   ├── CompilerFlags.cmake   # Strict cross-platform warning flags
-│   ├── VendorOCCT.cmake      # OCCT subdirectory + pcad::occt alias target
-│   └── Docs.cmake            # Doxygen → Sphinx pipeline
-├── vendor/
-│   ├── occt/                 # git submodule — OpenCASCADE 7.8
-│   ├── catch2/               # git submodule — Catch2 v3
-│   └── eigen/                # git submodule — Eigen 3.4
-├── src/
-│   ├── geometry/             # Thin OCCT wrapper utilities
-│   ├── parametric/           # Design variable types
-│   ├── io/                   # STEP / IGES / STL export
-│   └── main.cpp              # CLI entry point
-├── tests/
-│   ├── geometry/             # Catch2 unit tests — geometry module
-│   └── io/                   # Catch2 unit tests — STEP roundtrip
-├── docs/
-│   ├── sphinx/               # Sphinx source (conf.py, index.rst, …)
-│   ├── requirements.txt      # Pinned Python doc dependencies
-│   ├── venv-setup.sh         # Create .venv on Linux
-│   └── venv-setup.ps1        # Create .venv on Windows
-├── .github/
-│   ├── workflows/
-│   │   ├── ci.yml            # Build + test matrix (Linux, Windows)
-│   │   └── docs.yml          # Build docs → GitHub Pages
-│   └── ISSUE_TEMPLATE/
-├── bootstrap.sh              # git submodule init (Linux)
-├── bootstrap.ps1             # git submodule init (Windows)
-├── CMakeLists.txt
-├── CMakePresets.json
-├── .clang-format
-├── .clang-tidy
-└── .gitmodules
+All dependencies are git submodules pinned to a specific tag. The pinned
+commits are baked into the gitlinks — `bootstrap.sh` / `bootstrap.ps1` always
+checks out exactly those commits with no extra steps.
+
+| Library | Tag | License | Purpose |
+|---|---|---|---|
+| [OpenCASCADE](https://github.com/Open-Cascade-SAS/OCCT) | `V7_8_0` | LGPL 2.1 | Geometry kernel, STEP/IGES/STL I/O |
+| [Catch2](https://github.com/catchorg/Catch2) | `v3.6.0` | BSL-1.0 | Unit and integration testing |
+| [Eigen](https://gitlab.com/libeigen/eigen) | `3.4.0` | MPL-2.0 | Header-only linear algebra |
+
+Only the OCCT geometry kernel modules are compiled:
+`FoundationClasses`, `ModelingData`, `ModelingAlgorithms`, `DataExchange`.
+Visualisation, scripting (Tcl/Tk), and inspector modules are all disabled.
+
+To upgrade a submodule:
+
+```bash
+git -C vendor/<name> fetch --tags
+git -C vendor/<name> checkout <new-tag>
+git add vendor/<name>
+git commit -m "chore(vendor): bump <name> to <new-tag>"
 ```
 
 ---
@@ -181,45 +192,22 @@ cmake --preset docs
 cmake --build build/docs --target docs
 ```
 
-Documentation is automatically published to GitHub Pages on every push to
-`main` via `.github/workflows/docs.yml`.
-
----
-
-## Vendored dependencies
-
-All dependencies are git submodules pinned to a specific tag.
-**Do not upgrade a submodule without updating the pinned tag in `.gitmodules`
-and testing on both platforms.**
-
-| Library | Tag | Purpose |
-|---|---|---|
-| [OpenCASCADE](https://git.dev.opencascade.org/repos/occt.git) | `V7_8_0` | Geometry kernel, STEP/IGES I/O |
-| [Catch2](https://github.com/catchorg/Catch2) | `v3.6.0` | Unit + integration test framework |
-| [Eigen](https://gitlab.com/libeigen/eigen) | `3.4.0` | Header-only linear algebra |
-
-Only the OCCT geometry kernel modules are compiled
-(`FoundationClasses`, `ModelingData`, `ModelingAlgorithms`, `DataExchange`).
-Visualisation, scripting (Tcl/Tk), and inspector modules are all disabled,
-keeping build times fast and external dependencies minimal.
-
 ---
 
 ## Using this template for a new project
 
-1. Create a repo from this template on GitHub.
-2. Rename the top-level `project()` call in `CMakeLists.txt`.
-3. Replace `src/geometry/`, `src/parametric/`, `src/io/` with your own modules.
-4. Update this README — replace badges and org/repo references.
-5. Run `./bootstrap.sh` and confirm `cmake --preset linux-debug` builds clean.
+1. Click **Use this template → Create a new repository** on GitHub.
+2. Rename the `project()` call in `CMakeLists.txt`.
+3. Replace `YOUR_ORG/ParametricCAD` badge URLs with your org and repo name.
+4. Add your own modules under `src/` and tests under `tests/`.
+5. Run `.\bootstrap.ps1` (or `./bootstrap.sh`) and confirm the build is clean.
 
 ---
 
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit style, and
-the PR checklist. All C++ code must pass `clang-format` and `clang-tidy`
-before merge — both are checked in CI.
+the PR checklist.
 
 ---
 
@@ -227,11 +215,11 @@ before merge — both are checked in CI.
 
 GPL v3 — see [LICENSE](LICENSE).
 
-## 👤 Author
+## Author
 
-**Prof.Dr. Onur Tuncer**  
-Aerospace Engineer, Researcher & C++ Systems Developer  
-Email: **onur.tuncer@itu.edu.tr**
+**Prof. Dr. Onur Tuncer**
+Aerospace Engineer, Researcher & C++ Systems Developer
+Email: onur.tuncer@itu.edu.tr
 
 <p align="left">
   <img src="assets/itu_logo.png" width="180" alt="Istanbul Technical University"/>
