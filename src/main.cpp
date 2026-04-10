@@ -36,34 +36,34 @@ int main(int argc, char* argv[])
     // ── Build example geometry ────────────────────────────────────────────────
     std::cout << "\nBuilding geometry...\n";
 
-    const auto sphere = pcad::geometry::makeSphere(5.0);
+    const auto sphere = PCAD::Geometry::MakeSphere(5.0);
     if (!sphere) {
         std::cerr << "ERROR: failed to build sphere\n";
         return EXIT_FAILURE;
     }
-    std::cout << "  Sphere  r=5.0  type=" << pcad::geometry::shapeTypeString(*sphere) << '\n';
+    std::cout << "  Sphere  r=5.0  type=" << PCAD::Geometry::ShapeTypeString(*sphere) << '\n';
 
-    const auto box = pcad::geometry::makeBox(10.0, 6.0, 4.0);
+    const auto box = PCAD::Geometry::MakeBox(10.0, 6.0, 4.0);
     if (!box) {
         std::cerr << "ERROR: failed to build box\n";
         return EXIT_FAILURE;
     }
-    std::cout << "  Box  10x6x4  type=" << pcad::geometry::shapeTypeString(*box) << '\n';
+    std::cout << "  Box  10x6x4  type=" << PCAD::Geometry::ShapeTypeString(*box) << '\n';
 
     // ── Bounding boxes ────────────────────────────────────────────────────────
-    if (const auto bb = pcad::geometry::boundingBox(*sphere)) {
-        const auto [dx, dy, dz] = bb->extents();
+    if (const auto bb = PCAD::Geometry::GetBoundingBox(*sphere)) {
+        const auto [dx, dy, dz] = bb->Extents();
         std::cout << "  Sphere bbox extents: " << dx << " x " << dy << " x " << dz << '\n';
     }
 
     // ── STEP export ───────────────────────────────────────────────────────────
     std::cout << "\nExporting STEP...\n";
     try {
-        pcad::io::StepExporter stepExp;
-        stepExp.addShape(*sphere, "ExampleSphere");
-        stepExp.addShape(*box, "ExampleBox");
+        PCAD::IO::StepExporter stepExp;
+        stepExp.AddShape(*sphere, "ExampleSphere");
+        stepExp.AddShape(*box, "ExampleBox");
         const auto stepPath = outDir / "example.step";
-        stepExp.write(stepPath);
+        stepExp.Write(stepPath);
         std::cout << "  Written: " << stepPath.string() << '\n';
     }
     catch (const std::exception& e) {
@@ -74,10 +74,10 @@ int main(int argc, char* argv[])
     // ── STL export ────────────────────────────────────────────────────────────
     std::cout << "\nExporting STL...\n";
     try {
-        pcad::io::StlExporter stlExp;
-        stlExp.setLinearDeflection(0.01);
+        PCAD::IO::StlExporter stlExp;
+        stlExp.SetLinearDeflection(0.01);
         const auto stlPath = outDir / "example_sphere.stl";
-        stlExp.write(*sphere, stlPath);
+        stlExp.Write(*sphere, stlPath);
         std::cout << "  Written: " << stlPath.string() << '\n';
     }
     catch (const std::exception& e) {

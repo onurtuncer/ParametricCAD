@@ -7,7 +7,6 @@
 
 add_library(pcad_lib STATIC
     geometry/OcctUtils.cpp
-    parametric/DesignVariable.cpp
     io/StepExporter.cpp
     io/StlExporter.cpp
 )
