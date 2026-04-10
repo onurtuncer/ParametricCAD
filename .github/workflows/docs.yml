@@ -3,6 +3,9 @@ name: Docs
 on:
   workflow_dispatch:  # manual trigger until docs/sphinx/ source is scaffolded
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
   pages: write
