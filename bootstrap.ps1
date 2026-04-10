@@ -12,9 +12,9 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Resolve-Path "$PSScriptRoot"
 Set-Location $RepoRoot
 
-Write-Host "╔══════════════════════════════════════════════╗"
-Write-Host "║         ParametricCAD — Bootstrap            ║"
-Write-Host "╚══════════════════════════════════════════════╝"
+Write-Host "================================================"
+Write-Host "=         ParametricCAD - Bootstrap            ="
+Write-Host "================================================"
 Write-Host ""
 
 # ── Git check ────────────────────────────────────────────────────────────────
@@ -25,6 +25,9 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 Write-Host "==> Found $(git --version)"
 
 # ── Submodules ────────────────────────────────────────────────────────────────
+Write-Host ""
+Write-Host "==> Syncing submodule URLs from .gitmodules ..."
+git submodule sync
 Write-Host ""
 Write-Host "==> Initialising and updating git submodules ..."
 git submodule update --init --recursive --progress

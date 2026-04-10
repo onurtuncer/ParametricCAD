@@ -24,6 +24,9 @@ if ! command -v git &>/dev/null; then
 fi
 
 # ── Submodules ────────────────────────────────────────────────────────────────
+echo "==> Syncing submodule URLs from .gitmodules ..."
+git submodule sync
+echo ""
 echo "==> Initialising and updating git submodules ..."
 git submodule update --init --recursive --progress
 echo "    Done."
