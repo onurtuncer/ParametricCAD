@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux GCC Debug
+            os: ubuntu-24.04
+            preset: linux-debug
+
+          - name: Linux GCC Release
+            os: ubuntu-24.04
+            preset: linux-release
+
+          - name: Linux ASan
+            os: ubuntu-24.04
+            preset: linux-asan
+
+          - name: Windows MSVC Debug
+            os: windows-2022
+            preset: windows-msvc-debug
+
+          - name: Windows MSVC Release
+            os: windows-2022
+            preset: windows-msvc-release
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build gcc g++ \
+            libfontconfig1-dev libfreetype-dev \
+            libx11-dev libxext-dev
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+
+      - name: Build
+        run: cmake --build build/${{ matrix.preset }} --parallel
+
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }} --output-on-failure

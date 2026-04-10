@@ -3,8 +3,8 @@
 > A GitHub template for CAD applications built on
 > [OpenCASCADE Technology (OCCT)](https://dev.opencascade.org/) in modern C++20.
 
-[![CI](https://github.com/YOUR_ORG/ParametricCAD/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_ORG/ParametricCAD/actions/workflows/ci.yml)
-[![Docs](https://github.com/YOUR_ORG/ParametricCAD/actions/workflows/docs.yml/badge.svg)](https://YOUR_ORG.github.io/ParametricCAD)
+[![CI](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci.yml/badge.svg)](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci.yml)
+[![Docs](https://github.com/onurtuncer/ParametricCAD/actions/workflows/docs.yml/badge.svg)](https://onurtuncer.github.io/ParametricCAD)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 ---
@@ -96,7 +96,7 @@ sudo apt install cmake ninja-build gcc g++ python3 python3-venv doxygen
 ### 1 — Clone
 
 ```bash
-git clone https://github.com/YOUR_ORG/YOUR_REPO
+git clone https://github.com/onurtuncer/YOUR_REPO
 cd YOUR_REPO
 ```
 
@@ -198,7 +198,7 @@ cmake --build build/docs --target docs
 
 1. Click **Use this template → Create a new repository** on GitHub.
 2. Rename the `project()` call in `CMakeLists.txt`.
-3. Replace `YOUR_ORG/ParametricCAD` badge URLs with your org and repo name.
+3. Replace `onurtuncer/ParametricCAD` badge URLs with your org and repo name.
 4. Add your own modules under `src/` and tests under `tests/`.
 5. Run `.\bootstrap.ps1` (or `./bootstrap.sh`) and confirm the build is clean.
 
