@@ -75,9 +75,10 @@ endif()
 # one generated header. The global include_directories ensures OCCT's own
 # toolkits find them; the INTERFACE on pcad_occt_kernel propagates to consumers.
 include_directories(BEFORE
-    "${CMAKE_BINARY_DIR}/inc"               # Windows: flat copy by OCCT
-    "${CMAKE_BINARY_DIR}/occt/inc"          # Windows: Standard_Version.hxx
-    "${CMAKE_BINARY_DIR}/include/opencascade" # Linux: GCC/Ninja layout
+    "${CMAKE_BINARY_DIR}/inc"                        # Windows: flat copy by OCCT
+    "${CMAKE_BINARY_DIR}/occt/inc"                   # Windows: Standard_Version.hxx (INSTALL_DIR_INCLUDE="inc")
+    "${CMAKE_BINARY_DIR}/include/opencascade"        # Linux: collected source headers
+    "${CMAKE_BINARY_DIR}/occt/include/opencascade"   # Linux: Standard_Version.hxx (INSTALL_DIR_INCLUDE="include/opencascade")
 )
 
 # ── Pull in the source tree ───────────────────────────────────────────────────
@@ -90,9 +91,10 @@ add_library(pcad_occt_kernel INTERFACE)
 add_library(pcad::occt ALIAS pcad_occt_kernel)
 
 target_include_directories(pcad_occt_kernel INTERFACE
-    "${CMAKE_BINARY_DIR}/inc"                 # Windows flat copy
-    "${CMAKE_BINARY_DIR}/occt/inc"            # Windows Standard_Version.hxx
-    "${CMAKE_BINARY_DIR}/include/opencascade" # Linux/Ninja layout
+    "${CMAKE_BINARY_DIR}/inc"                        # Windows flat copy
+    "${CMAKE_BINARY_DIR}/occt/inc"                   # Windows Standard_Version.hxx
+    "${CMAKE_BINARY_DIR}/include/opencascade"        # Linux collected source headers
+    "${CMAKE_BINARY_DIR}/occt/include/opencascade"   # Linux Standard_Version.hxx
 )
 
 target_link_libraries(pcad_occt_kernel INTERFACE
