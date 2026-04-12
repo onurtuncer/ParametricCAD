@@ -13,7 +13,10 @@
 
 | Concern | Solution |
 |---|---|
+| Concern | Solution |
+|---|---|
 | Geometry kernel | OpenCASCADE 7.8 — vendored as a git submodule |
+| Automatic differentiation | CppAD — pre-built on Windows, FetchContent on Linux |
 | Build system | CMake 3.25+ with `CMakePresets.json` |
 | Compiler support | GCC, Clang, MSVC (x64) |
 | Test harness | Catch2 v3 — vendored as a git submodule |
@@ -21,8 +24,9 @@
 | CI | GitHub Actions — Linux and Windows matrix |
 | Code style | `.clang-format` + `.clang-tidy` |
 
-Everything is vendored. No system-installed OCCT, no vcpkg, no Conan.
-A clean clone + one bootstrap command is all that is needed to build.
+Everything is either vendored or fetched at configure time. No system-installed
+libraries, no vcpkg, no Conan. A clean clone + one bootstrap command is all
+that is needed to build.
 
 ---
 
@@ -150,15 +154,19 @@ ctest --preset windows-msvc-debug --output-on-failure
 
 ## Vendored dependencies
 
-All dependencies are git submodules pinned to a specific tag. The pinned
+Most dependencies are git submodules pinned to a specific tag; the pinned
 commits are baked into the gitlinks — `bootstrap.sh` / `bootstrap.ps1` always
-checks out exactly those commits with no extra steps.
+checks out exactly those commits with no extra steps. CppAD follows a different
+strategy: a pre-built static library is checked into `vendor/cppad/` for
+Windows, while on Linux it is downloaded and built from source at configure
+time via CMake's FetchContent.
 
-| Library | Tag | License | Purpose |
-|---|---|---|---|
-| [OpenCASCADE](https://github.com/Open-Cascade-SAS/OCCT) | `V7_8_0` | LGPL 2.1 | Geometry kernel, STEP/IGES/STL I/O |
-| [Catch2](https://github.com/catchorg/Catch2) | `v3.6.0` | BSL-1.0 | Unit and integration testing |
-| [Eigen](https://gitlab.com/libeigen/eigen) | `3.4.0` | MPL-2.0 | Header-only linear algebra |
+| Library | Version | License | Vendoring strategy | Purpose |
+|---|---|---|---|---|
+| [OpenCASCADE](https://github.com/Open-Cascade-SAS/OCCT) | `V7_8_0` | LGPL 2.1 | git submodule | Geometry kernel, STEP/IGES/STL I/O |
+| [CppAD](https://github.com/coin-or/CppAD) | `20250000.3` | EPL-2.0 / GPL-2.0+ | pre-built (Windows) · FetchContent (Linux) | Automatic differentiation |
+| [Catch2](https://github.com/catchorg/Catch2) | `v3.6.0` | BSL-1.0 | git submodule | Unit and integration testing |
+| [Eigen](https://gitlab.com/libeigen/eigen) | `3.4.0` | MPL-2.0 | git submodule | Header-only linear algebra |
 
 Only the OCCT geometry kernel modules are compiled:
 `FoundationClasses`, `ModelingData`, `ModelingAlgorithms`, `DataExchange`.
