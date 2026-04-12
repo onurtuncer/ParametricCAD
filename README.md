@@ -4,6 +4,7 @@
 > [OpenCASCADE Technology (OCCT)](https://dev.opencascade.org/) in modern C++20.
 
 [![CI](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci.yml/badge.svg)](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci.yml)
+[![Docs](https://github.com/onurtuncer/ParametricCAD/actions/workflows/docs.yml/badge.svg)](https://onurtuncer.github.io/ParametricCAD/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 ---
@@ -175,6 +176,12 @@ git commit -m "chore(vendor): bump <name> to <new-tag>"
 ---
 
 ## Building documentation
+
+The rendered documentation is published at
+**<https://onurtuncer.github.io/ParametricCAD/>** and is updated automatically
+on every push to `main` (via the Docs workflow).
+
+To build locally:
 
 ```bash
 # Linux
