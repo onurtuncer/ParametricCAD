@@ -11,6 +11,11 @@
 #     With FetchContent the populate dir is inside the build tree, so this is fine.
 #   - CppAD unconditionally sets CMAKE_INSTALL_PREFIX (CACHE FORCE) from cppad_prefix.
 #     We save and restore our own prefix around the subdirectory call.
+#   - CppAD only accepts CMAKE_BUILD_TYPE == "Debug" or "Release"; it hard-errors on
+#     RelWithDebInfo/MinSizeRel. We shadow CMAKE_BUILD_TYPE with "Release" for the
+#     duration of the subdirectory call, then restore it.
+#   - FetchContent_Populate(name) is deprecated in CMake ≥ 3.30 (policy CMP0169).
+#     We set the policy to OLD so we can keep the EXCLUDE_FROM_ALL add_subdirectory.
 #   - On Linux cppad_lib is built SHARED; build-tree RPATH keeps it findable for
 #     test executables without manual LD_LIBRARY_PATH.
 
@@ -46,6 +51,19 @@ else()
     set(_cppad_saved_prefix "${CMAKE_INSTALL_PREFIX}")
     set(cppad_prefix "${CMAKE_BINARY_DIR}/cppad_install" CACHE PATH "" FORCE)
 
+    # CppAD hard-errors on any build type other than Debug/Release.
+    # Shadow CMAKE_BUILD_TYPE with Release for the subdirectory call, then restore.
+    set(_cppad_saved_build_type "${CMAKE_BUILD_TYPE}")
+    if(CMAKE_BUILD_TYPE MATCHES "^(RelWithDebInfo|MinSizeRel)$")
+        set(CMAKE_BUILD_TYPE "Release")
+    endif()
+
+    # FetchContent_Populate(name) is deprecated in CMake ≥ 3.30 (CMP0169).
+    # Set OLD so we keep EXCLUDE_FROM_ALL on the add_subdirectory call.
+    if(POLICY CMP0169)
+        cmake_policy(SET CMP0169 OLD)
+    endif()
+
     FetchContent_GetProperties(cppad)
     if(NOT cppad_POPULATED)
         FetchContent_Populate(cppad)
@@ -53,6 +71,7 @@ else()
         add_subdirectory("${cppad_SOURCE_DIR}" "${cppad_BINARY_DIR}" EXCLUDE_FROM_ALL)
     endif()
 
+    set(CMAKE_BUILD_TYPE "${_cppad_saved_build_type}")
     set(CMAKE_INSTALL_PREFIX "${_cppad_saved_prefix}" CACHE PATH "Install path prefix" FORCE)
 
 endif()
