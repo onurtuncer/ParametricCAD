@@ -56,10 +56,11 @@ set(USE_DRACO     OFF CACHE BOOL "" FORCE)
 # Pointing to a build-tree subdirectory keeps OCCT's install() calls valid
 # while keeping them out of the project's own install prefix.
 set(_occt_install "${CMAKE_BINARY_DIR}/occt_install")
-set(INSTALL_DIR     "${_occt_install}"        CACHE PATH "" FORCE)
-set(INSTALL_DIR_BIN "${_occt_install}/bin"    CACHE PATH "" FORCE)
-set(INSTALL_DIR_LIB "${_occt_install}/lib"    CACHE PATH "" FORCE)
-set(INSTALL_DIR_INC "${_occt_install}/inc"    CACHE PATH "" FORCE)
+set(INSTALL_DIR        "${_occt_install}"           CACHE PATH "" FORCE)
+set(INSTALL_DIR_BIN    "${_occt_install}/bin"       CACHE PATH "" FORCE)
+set(INSTALL_DIR_LIB    "${_occt_install}/lib"       CACHE PATH "" FORCE)
+set(INSTALL_DIR_INC    "${_occt_install}/inc"       CACHE PATH "" FORCE)
+set(INSTALL_DIR_SCRIPT "${_occt_install}"           CACHE PATH "" FORCE)
 set(BUILD_DOC_Overview OFF CACHE BOOL "" FORCE)
 
 # ── Silence OCCT's own warnings so /WX doesn't trip on their headers ─────────
