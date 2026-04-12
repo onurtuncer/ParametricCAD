@@ -37,22 +37,29 @@ ParametricCAD/
 ├── cmake/
 │   ├── CompilerFlags.cmake   # Strict cross-platform warning flags
 │   ├── VendorOCCT.cmake      # OCCT subdirectory + pcad::occt alias target
+│   ├── VendorCppAD.cmake     # CppAD: pre-built (Windows) / FetchContent (Linux)
 │   └── Docs.cmake            # Doxygen → Sphinx pipeline
 ├── vendor/
 │   ├── occt/                 # git submodule — OpenCASCADE V7_8_0
 │   ├── catch2/               # git submodule — Catch2 v3.6.0
-│   └── eigen/                # git submodule — Eigen 3.4.0
+│   ├── eigen/                # git submodule — Eigen 3.4.0
+│   └── cppad/                # pre-built CppAD (Windows only; x64-Debug / x64-Release)
 ├── src/
 │   ├── geometry/             # OCCT wrapper (primitives, bounding box)
 │   ├── io/                   # STEP / IGES / STL export
+│   ├── parametric/           # parametric modelling layer (in progress)
 │   └── main.cpp              # CLI entry point
 ├── tests/
 │   ├── geometry/             # Catch2 tests — primitive creation & bbox
-│   └── io/                   # Catch2 tests — STEP and STL export
+│   ├── io/                   # Catch2 tests — STEP and STL export
+│   └── math/                 # Catch2 tests — CppAD automatic differentiation
 ├── docs/
+│   ├── sphinx/               # Sphinx source (conf.py, index.rst, api.rst)
 │   ├── requirements.txt      # Pinned Python doc dependencies
 │   ├── venv-setup.sh         # Create .venv on Linux
 │   └── venv-setup.ps1        # Create .venv on Windows
+├── assets/                   # Logos and diagrams used in documentation
+├── LICENSES/                 # Third-party license texts
 ├── bootstrap.sh              # Submodule init (Linux / macOS)
 ├── bootstrap.ps1             # Submodule init (Windows PowerShell)
 ├── CMakeLists.txt
