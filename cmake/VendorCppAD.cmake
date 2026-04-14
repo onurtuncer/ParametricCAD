@@ -18,6 +18,10 @@
 #     We set the policy to OLD so we can keep the EXCLUDE_FROM_ALL add_subdirectory.
 #   - On Linux cppad_lib is built SHARED; build-tree RPATH keeps it findable for
 #     test executables without manual LD_LIBRARY_PATH.
+#   - CppAD calls enable_testing() internally, which (CMake 3.27+) reserves the
+#     "test" target name.  CppAD then tries ADD_CUSTOM_TARGET(test) and errors.
+#     We shadow add_custom_target around the subdirectory call to rename that
+#     target to "cppad_test" instead.
 
 if(WIN32)
 
@@ -64,12 +68,31 @@ else()
         cmake_policy(SET CMP0169 OLD)
     endif()
 
+    # CppAD's CMakeLists.txt calls enable_testing() (reserving the "test" target
+    # name) and then tries ADD_CUSTOM_TARGET(test ...) on the same line — which
+    # CMake 3.27+ rejects.  Shadow add_custom_target so that any attempt to
+    # create a target literally named "test" is silently redirected to
+    # "cppad_test" instead.  The original built-in remains callable as
+    # _add_custom_target; we restore the pass-through after the subdirectory.
+    macro(add_custom_target _act_name)
+        if("${_act_name}" STREQUAL "test")
+            _add_custom_target(cppad_test ${ARGN})
+        else()
+            _add_custom_target(${_act_name} ${ARGN})
+        endif()
+    endmacro()
+
     FetchContent_GetProperties(cppad)
     if(NOT cppad_POPULATED)
         FetchContent_Populate(cppad)
         # EXCLUDE_FROM_ALL: cppad's own tests/examples won't join the default build.
         add_subdirectory("${cppad_SOURCE_DIR}" "${cppad_BINARY_DIR}" EXCLUDE_FROM_ALL)
     endif()
+
+    # Restore: forward unconditionally to the built-in.
+    macro(add_custom_target _act_name)
+        _add_custom_target(${_act_name} ${ARGN})
+    endmacro()
 
     set(CMAKE_BUILD_TYPE "${_cppad_saved_build_type}")
     set(CMAKE_INSTALL_PREFIX "${_cppad_saved_prefix}" CACHE PATH "Install path prefix" FORCE)
