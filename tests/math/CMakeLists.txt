@@ -7,6 +7,8 @@ add_executable(pcad_tests_math
 target_link_libraries(pcad_tests_math
     PRIVATE
         pcad::cppad
+        Eigen3::Eigen       # Windows cppad/configure.hpp has cppad_has_eigen=1;
+                            # sparse2eigen.hpp then requires <Eigen/Sparse>.
         pcad::compiler_flags
         Catch2::Catch2WithMain
 )
