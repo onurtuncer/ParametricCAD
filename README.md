@@ -3,7 +3,8 @@
 > A GitHub template for CAD applications built on
 > [OpenCASCADE Technology (OCCT)](https://dev.opencascade.org/) in modern C++20.
 
-[![CI](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci.yml/badge.svg)](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci.yml)
+[![CI · Linux](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci-linux.yml/badge.svg)](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci-linux.yml)
+[![CI · Windows](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci-windows.yml/badge.svg)](https://github.com/onurtuncer/ParametricCAD/actions/workflows/ci-windows.yml)
 [![Docs](https://github.com/onurtuncer/ParametricCAD/actions/workflows/docs.yml/badge.svg)](https://onurtuncer.github.io/ParametricCAD/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
