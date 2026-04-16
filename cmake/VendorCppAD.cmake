@@ -97,6 +97,15 @@ else()
     set(CMAKE_BUILD_TYPE "${_cppad_saved_build_type}")
     set(CMAKE_INSTALL_PREFIX "${_cppad_saved_prefix}" CACHE PATH "Install path prefix" FORCE)
 
+    # CppAD's cmake does not set INTERFACE_INCLUDE_DIRECTORIES on cppad_lib when
+    # consumed via add_subdirectory.  The headers live in the source tree under
+    # include/ and configure.hpp is written into the source tree by CppAD's own
+    # configure step, so both paths must be on the interface.
+    target_include_directories(cppad_lib INTERFACE
+        "${cppad_SOURCE_DIR}/include"
+        "${cppad_BINARY_DIR}/include"
+    )
+
 endif()
 
 # ── Alias ─────────────────────────────────────────────────────────────────────
