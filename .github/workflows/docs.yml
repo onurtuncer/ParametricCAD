@@ -1,7 +1,7 @@
 name: Docs
 
 on:
-  workflow_dispatch:  # manual trigger until docs/sphinx/ source is scaffolded
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true

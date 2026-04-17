@@ -37,7 +37,7 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 # ── Doxygen configuration ────────────────────────────────────────────────────
 set(DOXYGEN_PROJECT_NAME    "${PROJECT_NAME}")
 set(DOXYGEN_PROJECT_VERSION "${PROJECT_VERSION}")
-set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/docs/doxygen")
+set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/doxygen")
 set(DOXYGEN_GENERATE_HTML   NO)   # Sphinx will render HTML instead
 set(DOXYGEN_GENERATE_XML    YES)  # Breathe reads this
 set(DOXYGEN_GENERATE_LATEX  NO)
@@ -66,7 +66,7 @@ doxygen_add_docs(doxygen_xml
 
 # ── Sphinx configuration ──────────────────────────────────────────────────────
 set(SPHINX_SOURCE_DIR "${CMAKE_SOURCE_DIR}/docs/sphinx")
-set(SPHINX_BUILD_DIR  "${CMAKE_BINARY_DIR}/docs/sphinx")
+set(SPHINX_BUILD_DIR  "${CMAKE_BINARY_DIR}/sphinx")
 
 # Check sphinx-build is available
 execute_process(
