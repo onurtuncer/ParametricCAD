@@ -20,8 +20,9 @@
 #     test executables without manual LD_LIBRARY_PATH.
 #   - CppAD calls enable_testing() internally, which (CMake 3.27+) reserves the
 #     "test" target name.  CppAD then tries ADD_CUSTOM_TARGET(test) and errors.
-#     We shadow add_custom_target around the subdirectory call to rename that
-#     target to "cppad_test" instead.
+#     We shadow add_custom_target with a flag-gated macro (single definition to
+#     avoid the double-override infinite-recursion bug) that renames "test" to
+#     "cppad_test".  The flag is cleared after the subdirectory call.
 
 if(WIN32)
 
@@ -70,12 +71,13 @@ else()
 
     # CppAD's CMakeLists.txt calls enable_testing() (reserving the "test" target
     # name) and then tries ADD_CUSTOM_TARGET(test ...) on the same line — which
-    # CMake 3.27+ rejects.  Shadow add_custom_target so that any attempt to
-    # create a target literally named "test" is silently redirected to
-    # "cppad_test" instead.  The original built-in remains callable as
-    # _add_custom_target; we restore the pass-through after the subdirectory.
+    # CMake 3.27+ rejects.  Shadow add_custom_target with a single macro that
+    # checks a flag variable; set the flag FALSE after the subdirectory so all
+    # later calls pass through.  A second macro definition would rename the
+    # first to _add_custom_target and cause infinite recursion.
+    set(_cppad_intercept TRUE)
     macro(add_custom_target _act_name)
-        if("${_act_name}" STREQUAL "test")
+        if(_cppad_intercept AND "${_act_name}" STREQUAL "test")
             _add_custom_target(cppad_test ${ARGN})
         else()
             _add_custom_target(${_act_name} ${ARGN})
@@ -89,10 +91,7 @@ else()
         add_subdirectory("${cppad_SOURCE_DIR}" "${cppad_BINARY_DIR}" EXCLUDE_FROM_ALL)
     endif()
 
-    # Restore: forward unconditionally to the built-in.
-    macro(add_custom_target _act_name)
-        _add_custom_target(${_act_name} ${ARGN})
-    endmacro()
+    set(_cppad_intercept FALSE)
 
     set(CMAKE_BUILD_TYPE "${_cppad_saved_build_type}")
     set(CMAKE_INSTALL_PREFIX "${_cppad_saved_prefix}" CACHE PATH "Install path prefix" FORCE)
