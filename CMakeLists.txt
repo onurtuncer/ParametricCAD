@@ -27,23 +27,14 @@ option(PCAD_ENABLE_ASAN   "Enable AddressSanitizer"      OFF)
 # ── Compiler flags ───────────────────────────────────────────────────────────
 include(CompilerFlags)
 
-# ── Vendor dependencies ──────────────────────────────────────────────────────
+# ── Dependencies (via vcpkg) ─────────────────────────────────────────────────
 include(VendorOCCT)
-
-# CppAD — automatic differentiation (vendored on Windows, FetchContent on Linux)
 include(VendorCppAD)
 
-# Eigen — header-only, just expose the include path
-add_library(Eigen3::Eigen INTERFACE IMPORTED)
-set_target_properties(Eigen3::Eigen PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/vendor/eigen"
-)
+find_package(Eigen3 CONFIG REQUIRED)
 
-# Catch2 — only needed when tests are enabled
 if(PCAD_BUILD_TESTS)
-    set(CATCH_INSTALL_DOCS    OFF CACHE BOOL "" FORCE)
-    set(CATCH_INSTALL_EXTRAS  OFF CACHE BOOL "" FORCE)
-    add_subdirectory(vendor/catch2)
+    find_package(Catch2 3 CONFIG REQUIRED)
 endif()
 
 # ── Main library + application ───────────────────────────────────────────────

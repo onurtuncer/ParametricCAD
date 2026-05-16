@@ -12,6 +12,7 @@
       "name": "base",
       "hidden": true,
       "binaryDir": "${sourceDir}/build/${presetName}",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
@@ -57,7 +58,7 @@
       "name": "windows-msvc-debug",
       "displayName": "Windows · MSVC Debug",
       "inherits": "base",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "architecture": {
         "value": "x64",
         "strategy": "set"
@@ -73,7 +74,7 @@
       "name": "windows-msvc-release",
       "displayName": "Windows · MSVC Release",
       "inherits": "base",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "architecture": {
         "value": "x64",
         "strategy": "set"
@@ -94,6 +95,40 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_COMPILER": "clang-cl",
         "CMAKE_CXX_COMPILER": "clang-cl",
+        "PCAD_BUILD_TESTS": "ON",
+        "PCAD_ENABLE_ASAN": "OFF"
+      }
+    },
+
+    {
+      "name": "windows-msvc-ci-debug",
+      "displayName": "Windows · MSVC Debug (CI / VS 2022)",
+      "inherits": "base",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "PCAD_BUILD_TESTS": "ON",
+        "PCAD_ENABLE_ASAN": "OFF"
+      }
+    },
+
+    {
+      "name": "windows-msvc-ci-release",
+      "displayName": "Windows · MSVC Release (CI / VS 2022)",
+      "inherits": "base",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
         "PCAD_BUILD_TESTS": "ON",
         "PCAD_ENABLE_ASAN": "OFF"
       }
@@ -141,6 +176,16 @@
       "configurePreset": "windows-ninja-debug"
     },
     {
+      "name": "windows-msvc-ci-debug",
+      "configurePreset": "windows-msvc-ci-debug",
+      "configuration": "Debug"
+    },
+    {
+      "name": "windows-msvc-ci-release",
+      "configurePreset": "windows-msvc-ci-release",
+      "configuration": "Release"
+    },
+    {
       "name": "docs",
       "configurePreset": "docs"
     }
@@ -186,6 +231,24 @@
     {
       "name": "windows-msvc-release",
       "configurePreset": "windows-msvc-release",
+      "output": { "outputOnFailure": true },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      }
+    },
+    {
+      "name": "windows-msvc-ci-debug",
+      "configurePreset": "windows-msvc-ci-debug",
+      "output": { "outputOnFailure": true },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      }
+    },
+    {
+      "name": "windows-msvc-ci-release",
+      "configurePreset": "windows-msvc-ci-release",
       "output": { "outputOnFailure": true },
       "execution": {
         "noTestsAction": "error",

@@ -1,0 +1,11 @@
+{
+  "name": "parametriccad",
+  "version": "0.1.0",
+  "dependencies": [
+    "opencascade",
+    "cppad",
+    "eigen3",
+    "catch2"
+  ],
+  "builtin-baseline": "caf15fa53b49dff18427ab7e849ab439f740f2ee"
+}
